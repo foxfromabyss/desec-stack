@@ -16,7 +16,7 @@ export default {
     texts: {
       create: () => ('Create a record set'),
       destroy: rrset => (`Delete record set ${rrset.type} ${rrset.subname}?`),
-      destroyWarning: () => ('This operation will permanently remove this information from the DNS.'),
+      destroyInfo: () => ('This operation will permanently remove this information from the DNS.'),
     },
     columns: {
       type: {

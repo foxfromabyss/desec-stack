@@ -16,7 +16,7 @@ export default {
     texts: {
       create: () => ('You have TODO of 5 domains left. Upgrade now!'),
       destroy: d => (`Delete domain ${d.name}?`),
-      destroyWarning: () => 'This operation will cause the domain to disappear from the DNS. It will no longer be reachable from the Internet.',
+      destroyInfo: () => 'This operation will cause the domain to disappear from the DNS. It will no longer be reachable from the Internet.',
     },
     columns: {
       name: {
