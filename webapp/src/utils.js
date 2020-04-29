@@ -9,9 +9,9 @@ export const HTTP = axios.create({
   },
 });
 
-export async function logout() {
+export function logout() {
   try {
-    await HTTP.post('auth/token/logout/');
+    HTTP.post('auth/logout/');
   } catch (e) {
     // TODO improve error handling
     // console.log(e)
