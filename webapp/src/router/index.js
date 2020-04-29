@@ -145,7 +145,7 @@ router.beforeEach((to, from, next) => {
   // see if there are credentials in the session store that we don't know of
   let recovered = false;
   if (sessionStorage.getItem('token') && !store.state.authenticated){
-    HTTP.defaults.headers.common['Authorization'] = 'Token ' + sessionStorage.getItem('token');
+    HTTP.defaults.headers.common['Authorization'] = 'Token ' + sessionStorage.getItem('token').token;
     store.commit('login', sessionStorage.getItem('token'));
     recovered = true
   }

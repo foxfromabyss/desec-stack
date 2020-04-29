@@ -132,9 +132,9 @@ export default {
           password: this.password,
         });
         HTTP.defaults.headers.common.Authorization = `Token ${response.data.token}`;
-        this.$store.commit('login', response.data.token);
+        this.$store.commit('login', response.data);
         if (this.useSessionStorage) {
-          sessionStorage.setItem('token', response.data.token);
+          sessionStorage.setItem('token', response.data);
         }
         if ('redirect' in this.$route.query && this.$route.query.redirect) {
           this.$router.replace(this.$route.query.redirect);
