@@ -1,5 +1,5 @@
 <template>
-  <span :title="value">{{ timeAgo.format(new Date(value)) }}</span>
+  <span :title="value">{{ value ? timeAgo.format(new Date(value)) : 'never' }}</span>
 </template>
 
 <script>
@@ -9,8 +9,8 @@ export default {
   name: 'TimeAgo',
   props: {
     value: {
+      default: '',
       type: String,
-      required: true,
     },
   },
   computed: {
