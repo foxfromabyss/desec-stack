@@ -6,10 +6,9 @@ export default {
   name: 'CrudTokenList',
   extends: CrudList,
   data() {
-    const self = this;
     return {
         createable: true,
-        updateable: false,
+        updatable: true,
         destroyable: true,
         headlines: {
           table: 'Tokens',
@@ -62,13 +61,6 @@ export default {
             searchable: false,
           },
         },
-        actions: [
-          {
-            key: 'save',
-            go: item => self.save(item),
-            icon: 'mdi-content-save-edit',
-          },
-        ],
         paths: {
           list: 'auth/tokens/',
           create: 'auth/tokens/',
@@ -84,5 +76,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  tr:focus-within {
+    background-color: #CCCCCC !important;
+  }
+  tr:focus-within .mdi-content-save-edit {
+      color: forestgreen;
+  }
 </style>

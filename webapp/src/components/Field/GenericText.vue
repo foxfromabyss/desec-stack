@@ -6,6 +6,7 @@
     :type="type || ''"
     placeholder="(optional)"
     @input="input($event)"
+    @keyup="keyup($event)"
   />
 </template>
 
@@ -33,6 +34,9 @@ export default {
   methods: {
     input(event) {
       this.$emit('input', event);
+    },
+    keyup(event) {
+      this.$emit('keyup', event);
     },
   },
 };

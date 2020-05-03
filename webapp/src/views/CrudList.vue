@@ -53,7 +53,7 @@
               color="primary"
               dark
               class="mb-2"
-              :disabled="working"
+              :disabled="$store.state.working"
             >
               {{ headlines.create }}
             </v-btn>
@@ -138,7 +138,7 @@
             :items="rows"
             :search="search"
             :custom-filter="filterSearchableCols"
-            :loading="working || createDialogWorking || destroyDialogWorking"
+            :loading="$store.state.working || createDialogWorking || destroyDialogWorking"
             class="elevation-1"
           >
             <!-- row template -->
@@ -153,9 +153,10 @@
                 >
                   <component
                     :is="getDatatype(c.datatype, props.item)"
-                    :readonly="c.readonly"
+                    :readonly="c.readonly || $store.state.working"
                     v-model="props.item[c.value]"
                     v-bind="c.fieldProps ? c.fieldProps(props.item) : {}"
+                    @keyup="keyupHandler"
                   />
                   <!-- :clearable="rrset.records.length > 1"
                        @update:value="$set(rrset.records, index, $event)" -->
@@ -171,6 +172,7 @@
                   >
                     <v-btn
                       v-for="action in actions"
+                      :disabled="$store.state.working"
                       :key="action.key"
                       color="grey"
                       icon
@@ -179,7 +181,18 @@
                       <v-icon>{{ action.icon }}</v-icon>
                     </v-btn>
                     <v-btn
+                      v-if="updatable"
+                      :disabled="$store.state.working"
+                      color="grey"
+                      class="hover-green"
+                      icon
+                      @click.stop="save(props.item)"
+                    >
+                      <v-icon>mdi-content-save-edit</v-icon>
+                    </v-btn>
+                    <v-btn
                       v-if="destroyable"
+                      :disabled="$store.state.working"
                       color="grey"
                       class="hover-red"
                       icon
@@ -193,7 +206,7 @@
             </template>
             <template slot="no-data">
               <div
-                v-if="working"
+                v-if="$store.state.working"
                 class="py-5 text-xs-center"
               >
                 <p>fetching data ...</p>
@@ -242,7 +255,7 @@
                   {{ texts.destroyWarning(destroyDialogItem) }}
                 </v-alert>
                 <v-alert
-                  :value="destroyDialogError"
+                  :value="!!destroyDialogError"
                   type="error"
                 >
                   {{ errors[errors.length - 1] }}
@@ -291,6 +304,7 @@ import TimeAgo from '@/components/Field/TimeAgo';
 import Code from '@/components/Field/Code';
 import GenericText from '@/components/Field/GenericText';
 import RRSet from '@/components/Field/RRSet';
+import store from '../store';
 
 // safely access deeply nested objects
 const safeget = (path, object) => path.reduce((xs, x) => ((xs && xs[x]) ? xs[x] : null), object);
@@ -315,7 +329,6 @@ export default {
     destroyDialogItem: {},
     destroyDialogIndex: null,
     destroyDialogError: false,
-    working: false,
     errors: [],
     snackbar: false,
     snackbarInfoText: '',
@@ -360,6 +373,13 @@ export default {
     predelete: () => (undefined),
     postdelete: () => (undefined),
     rowclick: () => (undefined),
+    keyupHandler: (e) => {
+      // Intercept Enter key
+      if (e.keyCode === 13) {
+        // Submit
+        e.target.closest('tr').querySelector('.mdi-content-save-edit').closest('button').click();
+      }
+    },
   }},
   computed: {
     headers() {
@@ -390,7 +410,7 @@ export default {
   async mounted() {
     this.createDialogItem = Object.assign({}, this.defaultObject);
     try {
-      this.working = true;
+      store.commit('working');
       this.preload();
       this.rows = (await HTTP.get(this.resourcePath(this.paths.list, this.$route.params, '::'))).data;
       this.postload();
@@ -398,7 +418,7 @@ export default {
       this.error(e);
       this.postload(e);
     }
-    this.working = false;
+    store.commit('working', false);
   },
   methods: {
     /** *
@@ -450,13 +470,12 @@ export default {
      * Errors are handled by calling the error function.
      */
     async save(item) {
-      this.createDialogWorking = true;
-      this.createDialogError = false;
       for (const c in this.columns) {
         this.columns[c].createErrors = [];
       }
       if (item) {
         // edit item
+        store.commit('working');
         try {
           this.preupdate();
           const url = this.resourcePath(
@@ -470,8 +489,11 @@ export default {
           this.error(e);
           this.postupdate(e);
         }
+        store.commit('working', false);
       } else {
         // new item
+        this.createDialogWorking = true;
+        this.createDialogError = false;
         try {
           this.precreate();
           const url = this.resourcePath(
@@ -572,4 +594,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 </style>

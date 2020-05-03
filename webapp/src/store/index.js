@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     authenticated: false,
     token: {},
+    working: false,
   },
   mutations: {
     login(state, token) {
@@ -16,6 +17,9 @@ export default new Vuex.Store({
     logout(state) {
       state.authenticated = false;
       state.token = {};
+    },
+    working(state, working = true) {
+      state.working = working;
     },
   },
   actions: {
